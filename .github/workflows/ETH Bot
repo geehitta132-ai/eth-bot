@@ -1,0 +1,41 @@
+name: ETH bot
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/10 * * * *"  # every 10 minutes (optional)
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run bot
+        run: python eth_bot.py
+
+      - name: Commit and push data.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add data.json
+          git commit -m "update data" || echo "No changes to commit"
+
+          git pull --rebase
+          git push
