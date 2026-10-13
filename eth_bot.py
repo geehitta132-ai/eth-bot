@@ -190,3 +190,27 @@ if __name__ == "__main__":
             print("Error:", e)
         # wait until the next 15-minute mark
         time.sleep(INTERVAL - (time.time() % INTERVAL) + 5)
+# your imports
+import time
+import requests
+import os
+
+# your existing functions
+# get_eth_price()
+# analyze()
+
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+
+def send(msg):
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+    requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
+
+# THIS is the part you add at the bottom of your file
+while True:
+    price = get_eth_price()
+    verdict = analyze(price)
+
+    send(f"ETH: ${price}\nVerdict: {verdict}")
+
+    time.sleep(5)
